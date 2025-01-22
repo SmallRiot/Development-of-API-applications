@@ -24,6 +24,27 @@ init_db()
 def get_taxis():
     """
     Получить список всех такси
+    ---
+    responses:
+      200:
+        description: Список всех такси
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              number:
+                type: string
+                example: "123ABC"
+              driver:
+                type: string
+                example: "Иван Иванов"
+              status:
+                type: string
+                example: "free"
     """
     with sqlite3.connect("taxi_fleet.db") as conn:
         cursor = conn.cursor()
@@ -40,6 +61,37 @@ def get_taxis():
 def create_taxi():
     """
     Добавить новое такси
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            number:
+              type: string
+              example: "123ABC"
+            driver:
+              type: string
+              example: "Иван Иванов"
+            status:
+              type: string
+              example: "free"
+    responses:
+      201:
+        description: Новое такси добавлено
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+            number:
+              type: string
+            driver:
+              type: string
+            status:
+              type: string
     """
     if not request.json or 'number' not in request.json:
         abort(400)
@@ -66,6 +118,33 @@ def create_taxi():
 def get_taxis_by_status(status):
     """
     Получить список такси по статусу
+    ---
+    parameters:
+      - name: status
+        in: path
+        required: true
+        type: string
+        description: Статус такси (например, 'free' или 'busy')
+    responses:
+      200:
+        description: Список такси с указанным статусом
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              number:
+                type: string
+                example: "123ABC"
+              driver:
+                type: string
+                example: "Иван Иванов"
+              status:
+                type: string
+                example: "free"
     """
     with sqlite3.connect("taxi_fleet.db") as conn:
         cursor = conn.cursor()
@@ -82,6 +161,16 @@ def get_taxis_by_status(status):
 def reset_taxi_fleet():
     """
     Сбросить информацию о таксопарке
+    ---
+    responses:
+      200:
+        description: Все данные таксопарка удалены
+        schema:
+          type: object
+          properties:
+            result:
+              type: boolean
+              example: true
     """
     with sqlite3.connect("taxi_fleet.db") as conn:
         cursor = conn.cursor()
@@ -93,6 +182,42 @@ def reset_taxi_fleet():
 def update_taxi(taxi_id):
     """
     Обновить информацию о такси по ID
+    ---
+    parameters:
+      - name: taxi_id
+        in: path
+        required: true
+        type: integer
+        description: ID такси для обновления
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            number:
+              type: string
+              example: "123ABC"
+            driver:
+              type: string
+              example: "Иван Иванов"
+            status:
+              type: string
+              example: "в пути"
+    responses:
+      200:
+        description: Информация о такси обновлена
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+            number:
+              type: string
+            driver:
+              type: string
+            status:
+              type: string
     """
     if not request.json:
         abort(400)
@@ -125,6 +250,22 @@ def update_taxi(taxi_id):
 def delete_taxi(taxi_id):
     """
     Удалить такси по ID
+    ---
+    parameters:
+      - name: taxi_id
+        in: path
+        required: true
+        type: integer
+        description: ID такси для удаления
+    responses:
+      200:
+        description: Такси удалено
+        schema:
+          type: object
+          properties:
+            result:
+              type: boolean
+              example: true
     """
     with sqlite3.connect("taxi_fleet.db") as conn:
         cursor = conn.cursor()
